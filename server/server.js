@@ -43,7 +43,7 @@ const clientBuildPath = path.join(__dirname, "../client/build");
 app.use(express.static(clientBuildPath));
 
 // Catch-all: send React app for any non-API route
-app.get("*", (req, res) => {
+app.get("/{*path}", (req, res) => {
   res.sendFile(path.join(clientBuildPath, "index.html"));
 });
 

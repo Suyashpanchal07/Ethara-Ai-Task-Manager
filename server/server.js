@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const path = require("path"); // ✅ ADD THIS
+const path = require("path");
 const connectDB = require("./config/db");
 const protect = require("./middleware/authMiddleware");
 const authorizeRoles = require("./middleware/roleMiddleware");
@@ -37,13 +37,14 @@ app.get("/api/admin", protect, authorizeRoles("admin"), (req, res) => {
 });
 
 // ============================
-// SERVE REACT FRONTEND ✅ NEW
+// SERVE REACT FRONTEND
 // ============================
 const clientBuildPath = path.join(__dirname, "../client/build");
 app.use(express.static(clientBuildPath));
 
-// Catch-all: send React app for any non-API route
-app.get("/{*path}", (req, res) => {
+// ✅ FIXED: skip catch-all for API routes
+app.get("/{*path}", (req, res, next) => {
+  if (req.path.startsWith("/api")) return next();
   res.sendFile(path.join(clientBuildPath, "index.html"));
 });
 

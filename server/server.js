@@ -14,7 +14,15 @@ const app = express();
 // ============================
 // MIDDLEWARE
 // ============================
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+app.options("/{*path}", cors()); // ✅ Handle ALL preflight requests
+
 app.use(express.json());
 
 // ============================
@@ -42,7 +50,6 @@ app.get("/api/admin", protect, authorizeRoles("admin"), (req, res) => {
 const clientBuildPath = path.join(__dirname, "../client/build");
 app.use(express.static(clientBuildPath));
 
-// ✅ FIXED: skip catch-all for API routes
 app.get("/{*path}", (req, res, next) => {
   if (req.path.startsWith("/api")) return next();
   res.sendFile(path.join(clientBuildPath, "index.html"));
